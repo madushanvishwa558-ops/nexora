@@ -1,50 +1,18 @@
+body {
+  font-family: Arial;
+  background: #0f0f0f;
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#0b0b0f;
-  color:white;
+#chatBox {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid gray;
+  margin: 10px auto;
+  padding: 10px;
+  width: 80%;
+  background: #1a1a1a;
 }
-.nav{
- display:flex; justify-content:space-between; padding:20px 40px;
- position:sticky; top:0;
- background:rgba(20,20,20,.6); backdrop-filter: blur(10px);
-}
-.logo{font-size:24px;font-weight:bold;color:#f5c542;text-shadow:0 0 10px #f5c542;}
-.hero{
- min-height:80vh; display:flex; flex-wrap:wrap;
- align-items:center; justify-content:space-around;
- background:radial-gradient(circle,#111 0%,#050505 100%);
- padding:40px;
-}
-.hero h1{font-size:64px;color:#5bbcff;text-shadow:0 0 20px #5bbcff;}
-.hero h2{font-size:34px;}
-.buttons button{
- padding:14px 26px; margin:10px;
- border:none; border-radius:18px;
- background:#f5c542; cursor:pointer;
- box-shadow:0 0 15px #f5c542;
-}
-.secondary{
- background:#0f172a; color:#5bbcff;
- box-shadow:0 0 15px #5bbcff;
-}
-.glass{
- background:rgba(255,255,255,0.08);
- backdrop-filter:blur(12px);
- border-radius:22px;
- border:1px solid rgba(255,255,255,0.1);
- box-shadow:0 0 20px rgba(91,188,255,.15);
-}
-.chat-preview{padding:25px; width:320px;}
-.grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
- gap:20px; padding:40px;
-}
-.card{padding:24px; transition:.3s;}
-.card:hover{
- transform:translateY(-6px);
- box-shadow:0 0 25px rgba(245,197,66,.4);
-}
-footer{text-align:center;padding:30px;color:#999;}
