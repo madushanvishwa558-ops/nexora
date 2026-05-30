@@ -1,6 +1,4 @@
 async function send() {
-  console.log("SEND CLICKED");
-
   const inputEl = document.getElementById("input");
   const input = inputEl.value.trim();
 
@@ -8,8 +6,8 @@ async function send() {
 
   const chatBox = document.getElementById("chatBox");
 
-  // USER message
-  chatBox.innerHTML += `<div>You: ${input}</div>`;
+  // USER MESSAGE
+  chatBox.innerHTML += `<div class="msg user">You: ${input}</div>`;
 
   try {
     const res = await fetch("/api/chat", {
@@ -22,13 +20,15 @@ async function send() {
 
     const data = await res.json();
 
-    // AI message
-    chatBox.innerHTML += `<div>AI: ${data.reply}</div>`;
+    // AI MESSAGE
+    chatBox.innerHTML += `<div class="msg ai">🤖 ${data.reply}</div>`;
 
-  } catch (error) {
-    chatBox.innerHTML += `<div>AI: error connecting server</div>`;
+    // auto scroll
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+  } catch (err) {
+    chatBox.innerHTML += `<div class="msg ai">AI: error connecting server</div>`;
   }
 
   inputEl.value = "";
-  chatBox.scrollTop = chatBox.scrollHeight;
 }
