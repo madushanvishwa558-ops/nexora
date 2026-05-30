@@ -1,4 +1,19 @@
-document.getElementById("loading-msg").innerHTML =const speech = new SpeechSynthesisUtterance(data.reply);
-speech.lang = "en-US";
-speech.rate = 1;
-window.speechSynthesis.speak(speech);
+function startVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice not supported in this browser");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+    send();
+  };
+}
