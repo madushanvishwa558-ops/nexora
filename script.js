@@ -1,34 +1,19 @@
-async function send() {
-  const inputEl = document.getElementById("input");
-  const input = inputEl.value.trim();
+function startVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  if (!input) return;
-
-  const chatBox = document.getElementById("chatBox");
-
-  // USER MESSAGE
-  chatBox.innerHTML += `<div class="msg user">You: ${input}</div>`;
-
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ text: input })
-    });
-
-    const data = await res.json();
-
-    // AI MESSAGE
-    chatBox.innerHTML += `<div class="msg ai">🤖 ${data.reply}</div>`;
-
-    // auto scroll
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-  } catch (err) {
-    chatBox.innerHTML += `<div class="msg ai">AI: error connecting server</div>`;
+  if (!SpeechRecognition) {
+    alert("Voice not supported");
+    return;
   }
 
-  inputEl.value = "";
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+    send();
+  };
 }
