@@ -1,25 +1,26 @@
 async function send() {
-  let input = document.getElementById("input").value;
+  const inputEl = document.getElementById("input");
+  const input = inputEl.value;
+
+  console.log("INPUT:", input); // DEBUG
 
   if (!input) return;
 
-  let chatBox = document.getElementById("chatBox");
+  const chatBox = document.getElementById("chatBox");
 
   chatBox.innerHTML += "<p><b>You:</b> " + input + "</p>";
 
-  let res = await fetch("/api/chat", {
+  const res = await fetch("/api/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      text: input
-    })
+    body: JSON.stringify({ text: input })
   });
 
-  let data = await res.json();
+  const data = await res.json();
 
   chatBox.innerHTML += "<p><b>AI:</b> " + data.reply + "</p>";
 
-  document.getElementById("input").value = "";
+  inputEl.value = "";
 }
