@@ -5,7 +5,18 @@
 }
 
 body {
-  background: #212121;
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.75)
+    ),
+    url("/robot.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
   color: white;
   font-family: Arial, sans-serif;
   height: 100vh;
@@ -19,9 +30,10 @@ body {
 
 .header {
   padding: 15px;
-  border-bottom: 1px solid #333;
   text-align: center;
-  background: #171717;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
 }
 
 .header h1 {
@@ -43,12 +55,12 @@ body {
 }
 
 .user {
-  background: #2f6fed;
+  background: rgba(47, 111, 237, 0.9);
   margin-left: auto;
 }
 
 .ai {
-  background: #2d2d2d;
+  background: rgba(45, 45, 45, 0.9);
   margin-right: auto;
 }
 
@@ -56,8 +68,9 @@ body {
   display: flex;
   gap: 10px;
   padding: 15px;
-  border-top: 1px solid #333;
-  background: #171717;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
 }
 
 .input-area input {
@@ -66,7 +79,7 @@ body {
   border-radius: 12px;
   border: none;
   outline: none;
-  background: #2d2d2d;
+  background: rgba(45,45,45,0.9);
   color: white;
   font-size: 16px;
 }
@@ -77,4 +90,10 @@ body {
   border-radius: 12px;
   cursor: pointer;
   font-size: 16px;
+  background: #2f6fed;
+  color: white;
+}
+
+.input-area button:hover {
+  opacity: 0.9;
 }
