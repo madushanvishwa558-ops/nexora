@@ -20,10 +20,10 @@ async function send() {
 
     const data = await res.json();
 
-    // 🤖 AI MESSAGE
+    // AI MESSAGE
     chatBox.innerHTML += `<div class="msg ai">🤖 ${data.reply}</div>`;
 
-    // 🔊 AI SPEAK (VOICE OUTPUT)
+    // 🔊 AI SPEAK
     const speech = new SpeechSynthesisUtterance(data.reply);
     speech.lang = "en-US";
     speech.rate = 1;
@@ -35,4 +35,27 @@ async function send() {
 
   inputEl.value = "";
   chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+// 🎤 VOICE INPUT
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice not supported (use Chrome)");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+    send();
+  };
 }
