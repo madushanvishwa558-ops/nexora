@@ -1,6 +1,13 @@
 export default async function handler(req, res) {
   try {
-    const { text } = req.body;
+    const body = req.body || {};
+    const text = body.text || "";
+
+    if (!text) {
+      return res.status(400).json({
+        reply: "Please send a message"
+      });
+    }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -19,11 +26,16 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    const reply = data.choices?.[0]?.message?.content || "No response";
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      data?.error?.message ||
+      "No response from AI";
 
     res.status(200).json({ reply });
 
   } catch (error) {
-    res.status(500).json({ reply: "Error: AI not working" });
+    res.status(500).json({
+      reply: "Server error: " + error.message
+    });
   }
 }
