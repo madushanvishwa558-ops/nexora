@@ -34,7 +34,6 @@ h1 {
 .user {
   background: #4caf50;
   align-self: flex-end;
-  text-align: right;
 }
 
 .ai {
@@ -49,5 +48,6 @@ input {
 
 button {
   padding: 10px;
+  margin: 5px;
   cursor: pointer;
 }
