@@ -6,8 +6,14 @@ async function send() {
 
   const chatBox = document.getElementById("chatBox");
 
-  // USER MESSAGE
-  chatBox.innerHTML += `<div class="msg user">You: ${input}</div>`;
+  // User message
+  chatBox.innerHTML += `
+    <div class="msg user">
+      ${input}
+    </div>
+  `;
+
+  inputEl.value = "";
 
   try {
     const res = await fetch("/api/chat", {
@@ -15,47 +21,65 @@ async function send() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ text: input })
+      body: JSON.stringify({
+        text: input
+      })
     });
 
     const data = await res.json();
 
-    // AI MESSAGE
-    chatBox.innerHTML += `<div class="msg ai">🤖 ${data.reply}</div>`;
+    // AI message
+    chatBox.innerHTML += `
+      <div class="msg ai">
+        🤖 ${data.reply}
+      </div>
+    `;
 
-    // 🔊 AI SPEAK
+    // AI voice output
     const speech = new SpeechSynthesisUtterance(data.reply);
     speech.lang = "en-US";
     speech.rate = 1;
     window.speechSynthesis.speak(speech);
 
-  } catch (err) {
-    chatBox.innerHTML += `<div class="msg ai">AI: error connecting server</div>`;
+  } catch (error) {
+    chatBox.innerHTML += `
+      <div class="msg ai">
+        ❌ Error connecting to server
+      </div>
+    `;
   }
 
-  inputEl.value = "";
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 
-// 🎤 VOICE INPUT
+// Voice Input
 function startVoice() {
   const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    alert("Voice not supported (use Chrome)");
+    alert("Voice input not supported. Use Chrome.");
     return;
   }
 
   const recognition = new SpeechRecognition();
+
   recognition.lang = "en-US";
+  recognition.interimResults = false;
 
   recognition.start();
 
   recognition.onresult = function(event) {
     const text = event.results[0][0].transcript;
+
     document.getElementById("input").value = text;
+
     send();
+  };
+
+  recognition.onerror = function(error) {
+    console.log(error);
   };
 }
