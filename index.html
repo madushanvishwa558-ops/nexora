@@ -1,80 +1,19 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXORA – AI Super App</title>
-<link rel="stylesheet" href="style.css">
+  <title>Nexora AI</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<header class="nav">
-  <div class="logo">⚡ NEXORA</div>
-  <div class="lang">සිංහල | English</div>
-</header>
 
-<section class="hero">
-  <div class="hero-text">
-    <h1>NEXORA</h1>
-    <h2>One AI Platform. Everything You Need.</h2>
-    <p>Study, Work, Create, Earn – powered by AI.</p>
-    <div class="buttons">
-      <button>Start Free</button>
-      <button class="secondary">Try AI Chat</button>
-    </div>
-  </div>
-  <div class="chat-preview glass">
-    <h3>AI Chat Preview</h3>
-    <p><b>User:</b> Explain Pythagoras theorem</p>
-    <p><b>NEXORA AI:</b> a² + b² = c² → Step-by-step explanation ready.</p>
-  </div>
-</section>
+<h1>Nexora AI</h1>
 
-<section class="grid">
-  <div class="card glass">
-    <h3>🤖 AI Chat</h3>
-    <p>Sinhala / Tamil / English AI assistant with voice + prompt suggestions.</p>
-  </div>
-  <div class="card glass">
-    <h3>📚 Smart Study Hub</h3>
-    <p>Upload homework, get step-by-step AI solutions.</p>
-  </div>
-  <div class="card glass">
-    <h3>📄 CV & Job AI Maker</h3>
-    <p>Auto CV, PDF export, cover letters & job suggestions.</p>
-  </div>
-  <div class="card glass">
-    <h3>📱 Content Creator Hub</h3>
-    <p>Captions, hashtags, memes & TikTok scripts.</p>
-  </div>
-  <div class="card glass">
-    <h3>🎤 Voice + Text AI</h3>
-    <p>Voice typing, notes & AI replies.</p>
-  </div>
-  <div class="card glass">
-    <h3>✨ AI Photo Tools</h3>
-    <p>Background remover, restore & enhance photos.</p>
-  </div>
-  <div class="card glass">
-    <h3>💡 Business AI Tools</h3>
-    <p>Names, slogans, logos & branding ideas.</p>
-  </div>
-  <div class="card glass">
-    <h3>🗺️ Sri Lanka Smart Map</h3>
-    <p>Nearby places + AI recommendations.</p>
-  </div>
-  <div class="card glass">
-    <h3>💰 Earn Online</h3>
-    <p>Freelance gigs, micro tasks & student jobs.</p>
-  </div>
-  <div class="card glass">
-    <h3>🔥 Fun Zone</h3>
-    <p>Memes, AI jokes & stories.</p>
-  </div>
-</section>
+<input id="input" placeholder="Ask something..." />
+<button onclick="send()">Send</button>
 
-<footer>
-  <p>NEXORA MVP – AI Chat + Study Helper + CV Maker First Launch</p>
-</footer>
+<p id="output"></p>
+
+<script src="script.js"></script>
 </body>
 </html>
