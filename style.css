@@ -2,19 +2,44 @@ body {
   font-family: Arial;
   background: #0f0f0f;
   color: white;
-  text-align: center;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  margin: 10px;
 }
 
 #chatBox {
   width: 90%;
   max-width: 600px;
-  height: 300px;
+  flex: 1;
   overflow-y: auto;
   background: #1a1a1a;
-  margin: 10px auto;
   padding: 10px;
   border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.msg {
+  padding: 10px;
+  margin: 6px;
+  border-radius: 10px;
+  max-width: 80%;
+}
+
+.user {
+  background: #4caf50;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.ai {
+  background: #333;
+  align-self: flex-start;
 }
 
 input {
