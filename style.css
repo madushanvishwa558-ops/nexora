@@ -1,17 +1,4 @@
-body {
-  font-family: Arial;
-  background: #0f0f0f;
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-
-#chatBox {
-  height: 300px;
-  overflow-y: auto;
-  border: 1px solid gray;
-  margin: 10px auto;
-  padding: 10px;
-  width: 80%;
-  background: #1a1a1a;
+button {
+  margin-left: 5px;
+  cursor: pointer;
 }
