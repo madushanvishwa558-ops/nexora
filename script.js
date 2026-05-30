@@ -2,7 +2,7 @@ async function send() {
   const inputEl = document.getElementById("input");
   const input = inputEl.value;
 
-  console.log("INPUT:", input); // DEBUG
+  console.log("clicked:", input);
 
   if (!input) return;
 
