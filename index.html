@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Nexora AI · Voice & Intelligence</title>
+  <title>Nexora AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,74 +21,27 @@
 
   <div class="app">
     <div class="header">
-      <div class="logo-area">
-        <div class="logo-icon">
-          <i class="fas fa-brain"></i>
-        </div>
-        <div>
-          <h1>Nexora AI</h1>
-          <p>neural voice · ambient vision</p>
-        </div>
-      </div>
+      <h1>Nexora AI</h1>
       <button onclick="clearChat()" class="clear-btn">
         <i class="fas fa-trash-alt"></i> Clear
       </button>
     </div>
 
-    <!-- MAIN CONTAINER: CHAT + RIGHT PANEL -->
-    <div class="main-container">
-      <!-- CHAT SECTION -->
-      <div class="chat-section">
-        <div id="chatBox" class="chat-box">
-          <div class="msg ai">
-            <i class="fas fa-sparkles"></i> <strong>Nexora AI ready.</strong><br>
-            Ask me anything — real-time web search via Tavily. Voice assessment & abstract art on the right.
-          </div>
-        </div>
-        <div class="input-area">
-          <input id="input" type="text" placeholder="Message Nexora..." autocomplete="off">
-          <button onclick="startVoice()" class="voice-btn" title="Voice input">
-            <i class="fas fa-microphone"></i>
-          </button>
-          <button onclick="send()" class="send-btn">
-            <i class="fas fa-paper-plane"></i>
-          </button>
-        </div>
+    <div id="chatBox" class="chat-box">
+      <div class="msg ai">
+        <i class="fas fa-sparkles"></i> <strong>Nexora AI ready.</strong><br>
+        Ask me anything — real-time web search via Tavily.
       </div>
+    </div>
 
-      <!-- RIGHT PANEL: Voice Assessment + Abstract Art -->
-      <div class="right-panel">
-        <!-- Voice Assessment Card -->
-        <div class="voice-card" id="voiceCard">
-          <div class="voice-header">
-            <i class="fas fa-microphone-alt"></i>
-            <h3>Voice Assessment</h3>
-          </div>
-          <div class="mic-area">
-            <div class="mic-button" id="micBtn" onclick="startVoice()">
-              <i class="fas fa-microphone"></i>
-            </div>
-            <div class="listening-text" id="listeningLabel">
-              <i class="fas fa-circle"></i> Go ahead, I'm listening...
-            </div>
-          </div>
-          <div class="voice-status-note" id="voiceFeedback">
-            🎤 Tap the mic & speak naturally
-          </div>
-        </div>
-
-        <!-- Abstract Art Canvas -->
-        <div class="abstract-canvas">
-          <div class="fluid-shapes">
-            <div class="shape-blob"></div>
-            <div class="shape-blob"></div>
-            <div class="shape-blob"></div>
-          </div>
-          <div class="quote-text">
-            <i class="fas fa-palette"></i> "Fluid organic shapes dance across the canvas, conveying a sense of harmony in this abstract design."
-          </div>
-        </div>
-      </div>
+    <div class="input-area">
+      <input id="input" type="text" placeholder="Message Nexora..." autocomplete="off">
+      <button onclick="startVoice()" class="voice-btn">
+        <i class="fas fa-microphone"></i>
+      </button>
+      <button onclick="send()" class="send-btn">
+        <i class="fas fa-paper-plane"></i>
+      </button>
     </div>
   </div>
 
