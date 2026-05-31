@@ -32,28 +32,42 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-// ✅ NEW: Clean AI response formatter
-function formatAIResponse(rawReply) {
+// 🔥 CLEAN FORMATTER - Removes "OK:", "OK", and any weird prefixes
+function cleanAIReply(rawReply) {
   if (!rawReply) return "No response from AI.";
-
-  // Remove "OK:" prefix if exists
-  let cleaned = rawReply.replace(/^OK:\s*/i, '');
-
-  // If response still starts with something weird, just trim
+  
+  let cleaned = rawReply;
+  
+  // Remove "OK:" (with colon)
+  cleaned = cleaned.replace(/^OK:\s*/i, '');
+  
+  // Remove "OK" (without colon) at beginning
+  cleaned = cleaned.replace(/^OK\s+/i, '');
+  
+  // Remove any other weird prefixes like "OK: OK:"
+  cleaned = cleaned.replace(/^(OK:\s*)+/i, '');
+  
+  // Trim whitespace
   cleaned = cleaned.trim();
-
-  // If response is very short or contains generic error
-  if (cleaned.length === 0) return "🌐 No meaningful results. Try rephrasing.";
+  
+  // If empty after cleaning
+  if (cleaned.length === 0) {
+    return "🌐 No meaningful results. Try rephrasing.";
+  }
+  
+  // Handle error messages
   if (cleaned.toLowerCase().includes("no results") || cleaned.toLowerCase().includes("api failed")) {
     return "📡 No relevant results. Try a broader query.";
   }
   if (cleaned.toLowerCase().includes("backend crash")) {
     return "⚠️ Backend issue. Please check Tavily API key.";
   }
-
-  // If response looks like a Wikipedia extract or long text, just return it cleanly
-  // Add a nice icon and slight formatting for better UX
-  return `<i class="fas fa-brain" style="margin-right: 6px;"></i> ${cleaned}`;
+  if (cleaned.toLowerCase().includes("no input")) {
+    return "🤖 Please enter a question.";
+  }
+  
+  // Add a small brain icon at the beginning (optional)
+  return `<i class="fas fa-brain" style="margin-right: 6px; color: #ffd700;"></i> ${cleaned}`;
 }
 
 // API call to /api/chat
@@ -73,13 +87,14 @@ async function fetchAIResponse(userText) {
 
     const data = await response.json();
     let rawReply = data.reply || "No reply from AI.";
-
-    // Format the reply cleanly
-    const finalReply = formatAIResponse(rawReply);
+    
+    // 🔥 Apply cleaning
+    const finalReply = cleanAIReply(rawReply);
     return finalReply;
+    
   } catch (err) {
     console.error("API Error:", err);
-    return `❌ Connection error: ${err.message}. Make sure backend is running at /api/chat`;
+    return `❌ Connection error: ${err.message}`;
   }
 }
 
