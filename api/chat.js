@@ -3,10 +3,10 @@ export default async function handler(req, res) {
     const { text } = req.body || {};
 
     if (!text) {
-      return res.status(400).json({ reply: "No input found." });
+      return res.json({ reply: "Please type something." });
     }
 
-    // 1. Tavily Search
+    // 🔍 Tavily Search
     const searchRes = await fetch("https://api.tavily.com/search", {
       method: "POST",
       headers: {
@@ -23,32 +23,53 @@ export default async function handler(req, res) {
     const searchData = await searchRes.json();
 
     if (!searchData.results || searchData.results.length === 0) {
-      return res.json({ reply: "No results found." });
+      return res.json({
+        reply: `🤖 No results found for "${text}".`
+      });
     }
 
-    // 2. Extract clean text only (NO LINKS, NO IMAGES)
-    let context = searchData.results
-      .map(r => `${r.title}. ${r.content}`)
-      .join("\n");
+    // 🧹 CLEAN TEXT ONLY
+    const cleanText = searchData.results
+      .map(r => r.content || "")
+      .filter(c =>
+        c.length > 50 &&
+        !c.includes("http") &&
+        !c.includes("cookie") &&
+        !c.includes("subscribe")
+      )
+      .join(" ");
 
-    // 3. Simple AI-style summary (NO OpenAI needed)
-    const reply = summarize(text, context);
+    // 🧠 SMART SUMMARY
+    const reply = generateAnswer(text, cleanText);
 
-    return res.json({ reply });
+    res.json({ reply });
 
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ reply: "Error occurred." });
+    res.status(500).json({
+      reply: "Server error occurred."
+    });
   }
 }
 
 
-// 🧠 Simple summarizer engine (FREE AI STYLE)
-function summarize(query, context) {
-  const sentences = context
+// 🧠 SIMPLE AI SUMMARY ENGINE
+function generateAnswer(query, text) {
+
+  if (!text || text.length < 100) {
+    return `🤖 I couldn't find enough information about "${query}".`;
+  }
+
+  const sentences = text
     .split(".")
-    .filter(s => s.length > 40)
-    .slice(0, 5);
+    .map(s => s.trim())
+    .filter(s =>
+      s.length > 40 &&
+      !s.includes("http") &&
+      !s.includes("cookie") &&
+      !s.includes("login")
+    )
+    .slice(0, 4);
 
   return `🤖 About "${query}":\n\n` + sentences.join(". ") + ".";
 }
