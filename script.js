@@ -3,22 +3,21 @@ const chatBox = document.getElementById('chatBox');
 const input = document.getElementById('input');
 let isLoading = false;
 
-// Auto-scroll function
+// Scroll to bottom
 function scrollToBottom() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Add message to chat
+// Add message to UI
 function addMessage(content, isUser) {
   const msgDiv = document.createElement('div');
   msgDiv.className = `msg ${isUser ? 'user' : 'ai'}`;
   msgDiv.innerHTML = content.replace(/\n/g, '<br>');
   chatBox.appendChild(msgDiv);
   scrollToBottom();
-  return msgDiv;
 }
 
-// Show typing indicator
+// Typing indicator
 function showTyping() {
   const typingDiv = document.createElement('div');
   typingDiv.className = 'msg ai';
@@ -33,7 +32,31 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-// API call to backend (/api/chat)
+// ✅ NEW: Clean AI response formatter
+function formatAIResponse(rawReply) {
+  if (!rawReply) return "No response from AI.";
+
+  // Remove "OK:" prefix if exists
+  let cleaned = rawReply.replace(/^OK:\s*/i, '');
+
+  // If response still starts with something weird, just trim
+  cleaned = cleaned.trim();
+
+  // If response is very short or contains generic error
+  if (cleaned.length === 0) return "🌐 No meaningful results. Try rephrasing.";
+  if (cleaned.toLowerCase().includes("no results") || cleaned.toLowerCase().includes("api failed")) {
+    return "📡 No relevant results. Try a broader query.";
+  }
+  if (cleaned.toLowerCase().includes("backend crash")) {
+    return "⚠️ Backend issue. Please check Tavily API key.";
+  }
+
+  // If response looks like a Wikipedia extract or long text, just return it cleanly
+  // Add a nice icon and slight formatting for better UX
+  return `<i class="fas fa-brain" style="margin-right: 6px;"></i> ${cleaned}`;
+}
+
+// API call to /api/chat
 async function fetchAIResponse(userText) {
   const API_URL = '/api/chat';
   try {
@@ -42,46 +65,35 @@ async function fetchAIResponse(userText) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: userText })
     });
+
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
       throw new Error(errData.reply || `HTTP ${response.status}`);
     }
+
     const data = await response.json();
-    let reply = data.reply || "No reply from AI.";
-    
-    // Format the response
-    if (reply.startsWith("OK:")) {
-      let trimmed = reply.substring(3).trim();
-      if (trimmed.length > 0) {
-        reply = `<i class="fas fa-globe"></i> <strong>Web Insights:</strong><br><br>${trimmed}`;
-      } else {
-        reply = "🌐 No results found. Try rephrasing.";
-      }
-    } else if (reply.includes("No results") || reply.includes("API failed")) {
-      reply = "📡 No relevant results. Try a broader query.";
-    } else if (reply.includes("Backend crash")) {
-      reply = "⚠️ Backend issue. Check Tavily API key.";
-    } else if (reply === "No input") {
-      reply = "🤖 Please enter a question.";
-    }
-    return reply;
+    let rawReply = data.reply || "No reply from AI.";
+
+    // Format the reply cleanly
+    const finalReply = formatAIResponse(rawReply);
+    return finalReply;
   } catch (err) {
     console.error("API Error:", err);
-    return `❌ Error: ${err.message}`;
+    return `❌ Connection error: ${err.message}. Make sure backend is running at /api/chat`;
   }
 }
 
-// Send message function
+// Send message
 async function send() {
   if (isLoading) return;
   const userText = input.value.trim();
   if (!userText) return;
-  
+
   input.value = '';
   addMessage(userText, true);
   isLoading = true;
   showTyping();
-  
+
   try {
     const aiResponse = await fetchAIResponse(userText);
     removeTyping();
@@ -95,7 +107,7 @@ async function send() {
   }
 }
 
-// Clear chat history
+// Clear chat
 function clearChat() {
   const msgs = chatBox.querySelectorAll('.msg');
   for (let i = 0; i < msgs.length; i++) {
@@ -103,10 +115,10 @@ function clearChat() {
       msgs[i].remove();
     }
   }
-  addMessage("✨ Chat cleared.", false);
+  addMessage("✨ Chat cleared. Ask me anything!", false);
 }
 
-// Enter key support
+// Enter to send
 input.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
@@ -114,10 +126,9 @@ input.addEventListener('keypress', (e) => {
   }
 });
 
-// ========== VOICE RECOGNITION ==========
+// Voice recognition
 let recognition = null;
 let isListening = false;
-
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (SpeechRecognition) {
@@ -125,7 +136,7 @@ if (SpeechRecognition) {
   recognition.continuous = false;
   recognition.interimResults = false;
   recognition.lang = 'en-US';
-  
+
   recognition.onstart = () => {
     isListening = true;
     const micBtn = document.querySelector('.voice-btn');
@@ -134,7 +145,7 @@ if (SpeechRecognition) {
       micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
     }
   };
-  
+
   recognition.onend = () => {
     isListening = false;
     const micBtn = document.querySelector('.voice-btn');
@@ -143,9 +154,8 @@ if (SpeechRecognition) {
       micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
     }
   };
-  
-  recognition.onerror = (event) => {
-    console.warn('Speech error:', event.error);
+
+  recognition.onerror = () => {
     isListening = false;
     const micBtn = document.querySelector('.voice-btn');
     if (micBtn) {
@@ -153,7 +163,7 @@ if (SpeechRecognition) {
       micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
     }
   };
-  
+
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
     input.value = transcript;
@@ -163,23 +173,21 @@ if (SpeechRecognition) {
 
 function startVoice() {
   if (!recognition) {
-    alert("Voice recognition not supported in this browser. Please use Chrome, Edge, or Safari.");
+    alert("Voice recognition not supported in this browser.");
     return;
   }
-  
   if (isListening) {
     recognition.stop();
     return;
   }
-  
   try {
     recognition.start();
   } catch (err) {
-    console.log('Voice already started or error:', err);
+    console.log("Voice error:", err);
   }
 }
 
-// Make functions global for onclick
+// Expose functions globally
 window.send = send;
 window.clearChat = clearChat;
 window.startVoice = startVoice;
