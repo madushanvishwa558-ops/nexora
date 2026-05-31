@@ -1,75 +1,116 @@
-export default async function handler(req, res) {
+let chatBox;
+
+window.onload = function () {
+  chatBox = document.getElementById("chatBox");
+  loadChat();
+};
+
+async function send() {
+  const inputEl = document.getElementById("input");
+  const input = inputEl.value.trim();
+  if (!input) return;
+
+  inputEl.value = "";
+
+  addMessage("user", input);
+  saveChat("user", input);
+
+  const loadingId = "loading_" + Date.now();
+  addTempMessage(loadingId, "🤖 thinking...");
+
   try {
-    const { text } = req.body || {};
-
-    if (!text) {
-      return res.json({ reply: "Please type something." });
-    }
-
-    // 🔍 Tavily Search
-    const searchRes = await fetch("https://api.tavily.com/search", {
+    const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        api_key: process.env.TAVILY_API_KEY,
-        query: text,
-        search_depth: "basic",
-        max_results: 5
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: input })
     });
 
-    const searchData = await searchRes.json();
+    const data = await res.json();
 
-    if (!searchData.results || searchData.results.length === 0) {
-      return res.json({
-        reply: `🤖 No results found for "${text}".`
-      });
-    }
+    document.getElementById(loadingId).remove();
 
-    // 🧹 CLEAN TEXT ONLY
-    const cleanText = searchData.results
-      .map(r => r.content || "")
-      .filter(c =>
-        c.length > 50 &&
-        !c.includes("http") &&
-        !c.includes("cookie") &&
-        !c.includes("subscribe")
-      )
-      .join(" ");
+    addMessage("ai", data.reply);
+    saveChat("ai", data.reply);
 
-    // 🧠 SMART SUMMARY
-    const reply = generateAnswer(text, cleanText);
-
-    res.json({ reply });
+    // 🔊 VOICE (FIXED + INCLUDED)
+    speak(data.reply);
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      reply: "Server error occurred."
-    });
+    document.getElementById(loadingId).innerHTML =
+      "❌ error connecting AI";
   }
+
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// 🧠 UI MESSAGE
+function addMessage(type, text) {
+  chatBox.innerHTML += `
+    <div class="msg ${type}">
+      ${type === "ai" ? "🤖 " : ""}${text}
+    </div>
+  `;
+}
 
-// 🧠 SIMPLE AI SUMMARY ENGINE
-function generateAnswer(query, text) {
+// ⏳ LOADING
+function addTempMessage(id, text) {
+  chatBox.innerHTML += `
+    <div class="msg ai" id="${id}">
+      ${text}
+    </div>
+  `;
+}
 
-  if (!text || text.length < 100) {
-    return `🤖 I couldn't find enough information about "${query}".`;
+// 💾 SAVE CHAT
+function saveChat(type, text) {
+  let chats = JSON.parse(localStorage.getItem("nexora_chat")) || [];
+  chats.push({ type, text });
+  localStorage.setItem("nexora_chat", JSON.stringify(chats));
+}
+
+// 📂 LOAD CHAT
+function loadChat() {
+  let chats = JSON.parse(localStorage.getItem("nexora_chat")) || [];
+  chats.forEach(c => addMessage(c.type, c.text));
+}
+
+// 🧹 CLEAR CHAT
+function clearChat() {
+  localStorage.removeItem("nexora_chat");
+  chatBox.innerHTML = "";
+}
+
+// 🎤 VOICE INPUT
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice not supported");
+    return;
   }
 
-  const sentences = text
-    .split(".")
-    .map(s => s.trim())
-    .filter(s =>
-      s.length > 40 &&
-      !s.includes("http") &&
-      !s.includes("cookie") &&
-      !s.includes("login")
-    )
-    .slice(0, 4);
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
 
-  return `🤖 About "${query}":\n\n` + sentences.join(". ") + ".";
+  recognition.start();
+
+  recognition.onresult = function (event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+    send();
+  };
+}
+
+// 🔊 VOICE OUTPUT (FINAL FIX)
+function speak(text) {
+  const speech = new SpeechSynthesisUtterance(text);
+
+  speech.lang = "en-US";
+  speech.rate = 1;
+  speech.volume = 1;
+  speech.pitch = 1;
+
+  window.speechSynthesis.cancel(); // stop old voice
+  window.speechSynthesis.speak(speech);
 }
