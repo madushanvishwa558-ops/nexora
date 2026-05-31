@@ -3,12 +3,11 @@ export default async function handler(req, res) {
     const { text } = req.body || {};
 
     if (!text) {
-      return res.status(400).json({
-        reply: "Please enter a question."
-      });
+      return res.status(400).json({ reply: "No input found." });
     }
 
-    const response = await fetch("https://api.tavily.com/search", {
+    // 1. Tavily Search
+    const searchRes = await fetch("https://api.tavily.com/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -21,29 +20,35 @@ export default async function handler(req, res) {
       })
     });
 
-    const data = await response.json();
+    const searchData = await searchRes.json();
 
-    if (!data.results || data.results.length === 0) {
-      return res.status(200).json({
-        reply: "No search results found."
-      });
+    if (!searchData.results || searchData.results.length === 0) {
+      return res.json({ reply: "No results found." });
     }
 
-    const answer = data.results
-      .map((item, index) =>
-        `${index + 1}. ${item.title}\n${item.content}`
-      )
-      .join("\n\n");
+    // 2. Extract clean text only (NO LINKS, NO IMAGES)
+    let context = searchData.results
+      .map(r => `${r.title}. ${r.content}`)
+      .join("\n");
 
-    res.status(200).json({
-      reply: answer
-    });
+    // 3. Simple AI-style summary (NO OpenAI needed)
+    const reply = summarize(text, context);
 
-  } catch (error) {
-    console.error(error);
+    return res.json({ reply });
 
-    res.status(500).json({
-      reply: "Search error."
-    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ reply: "Error occurred." });
   }
+}
+
+
+// 🧠 Simple summarizer engine (FREE AI STYLE)
+function summarize(query, context) {
+  const sentences = context
+    .split(".")
+    .filter(s => s.length > 40)
+    .slice(0, 5);
+
+  return `🤖 About "${query}":\n\n` + sentences.join(". ") + ".";
 }
