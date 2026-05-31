@@ -2,7 +2,6 @@ let chatBox;
 
 window.onload = function () {
   chatBox = document.getElementById("chatBox");
-
   loadChat();
 };
 
@@ -15,8 +14,6 @@ async function send() {
 
   // USER message
   addMessage("user", input);
-
-  // save
   saveChat("user", input);
 
   // loading
@@ -32,7 +29,6 @@ async function send() {
 
     const data = await res.json();
 
-    // remove loading
     document.getElementById(loadingId).remove();
 
     // AI message
@@ -53,7 +49,7 @@ async function send() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// 👉 Add message to UI
+// 👉 UI message
 function addMessage(type, text) {
   chatBox.innerHTML += `
     <div class="msg ${type}">
@@ -62,7 +58,7 @@ function addMessage(type, text) {
   `;
 }
 
-// 👉 Temporary message (loading)
+// 👉 loading message
 function addTempMessage(id, text) {
   chatBox.innerHTML += `
     <div class="msg ai" id="${id}">
@@ -71,29 +67,32 @@ function addTempMessage(id, text) {
   `;
 }
 
-// 👉 Save chat to localStorage
+// 💾 save chat
 function saveChat(type, text) {
   let chats = JSON.parse(localStorage.getItem("nexora_chat")) || [];
   chats.push({ type, text });
   localStorage.setItem("nexora_chat", JSON.stringify(chats));
 }
 
-// 👉 Load chat from localStorage
+// 📂 load chat
 function loadChat() {
   let chats = JSON.parse(localStorage.getItem("nexora_chat")) || [];
-
-  chats.forEach(c => {
-    addMessage(c.type, c.text);
-  });
+  chats.forEach(c => addMessage(c.type, c.text));
 }
 
-// 🎤 Voice input
+// 🧹 clear chat
+function clearChat() {
+  localStorage.removeItem("nexora_chat");
+  chatBox.innerHTML = "";
+}
+
+// 🎤 voice
 function startVoice() {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    alert("Voice not supported (use Chrome)");
+    alert("Voice not supported");
     return;
   }
 
@@ -107,10 +106,4 @@ function startVoice() {
     document.getElementById("input").value = text;
     send();
   };
-}
-
-// 🧹 Optional: clear chat
-function clearChat() {
-  localStorage.removeItem("nexora_chat");
-  chatBox.innerHTML = "";
 }
