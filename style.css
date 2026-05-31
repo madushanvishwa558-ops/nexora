@@ -1,156 +1,705 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>NimAI · intelligent search companion</title>
+  <!-- Google Fonts + modern fallback -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (free icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  background:
-    linear-gradient(135deg, #000000, #0f0f0f);
-  color: #ffd700;
-  font-family: "Segoe UI", sans-serif;
-  height: 100vh;
-  overflow: hidden;
-}
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #f6f9fc 0%, #edf2f8 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-/* APP LAYOUT */
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+    /* main glassmorphic chat container */
+    .chat-app {
+      max-width: 1400px;
+      width: 100%;
+      height: 90vh;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
 
-/* HEADER */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
+    /* header — sleek and minimal */
+    .chat-header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+      padding: 1rem 1.8rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
 
-  background: rgba(0,0,0,0.6);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  backdrop-filter: blur(12px);
-}
+    .brand-icon {
+      background: linear-gradient(135deg, #2b3b4e, #1e2a36);
+      width: 44px;
+      height: 44px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 14px -6px rgba(0, 0, 0, 0.1);
+    }
 
-.header h1 {
-  color: #ffd700;
-  font-size: 22px;
-  letter-spacing: 2px;
-}
+    .brand-icon i {
+      font-size: 1.6rem;
+      color: white;
+    }
 
-.header button {
-  background: transparent;
-  border: 1px solid #ffd700;
-  color: #ffd700;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #1f2e3a, #2c3e4e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
 
-.header button:hover {
-  background: #ffd700;
-  color: black;
-}
+    .brand p {
+      font-size: 0.75rem;
+      color: #4a627a;
+      font-weight: 500;
+      margin-top: 2px;
+    }
 
-/* CHAT BOX */
-.chat-box {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
+    .status-badge {
+      background: #eef2ff;
+      padding: 6px 14px;
+      border-radius: 60px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #1e3a5f;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(2px);
+    }
 
-  background:
-    radial-gradient(circle at top, rgba(255,215,0,0.05), transparent);
-}
+    .status-badge i {
+      font-size: 0.7rem;
+      color: #10b981;
+    }
 
-/* MESSAGE BASE */
-.msg {
-  max-width: 75%;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  border-radius: 14px;
+    /* chat messages area */
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      scroll-behavior: smooth;
+    }
 
-  line-height: 1.4;
-  font-size: 15px;
+    /* custom scrollbar */
+    .messages-container::-webkit-scrollbar {
+      width: 6px;
+    }
 
-  animation: fadeIn 0.2s ease-in;
-}
+    .messages-container::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 8px;
+    }
 
-/* USER MESSAGE */
-.user {
-  margin-left: auto;
+    .messages-container::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
 
-  background: rgba(255, 215, 0, 0.15);
-  border: 1px solid rgba(255, 215, 0, 0.4);
-  color: #ffd700;
-}
+    /* message bubbles */
+    .message {
+      display: flex;
+      gap: 14px;
+      max-width: 85%;
+      animation: fadeSlideUp 0.25s ease-out;
+    }
 
-/* AI MESSAGE */
-.ai {
-  margin-right: auto;
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.2);
-  color: #ffe680;
-}
+    .user-message {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
 
-/* INPUT AREA */
-.input-area {
-  display: flex;
-  gap: 10px;
-  padding: 15px;
+    .ai-message {
+      align-self: flex-start;
+    }
 
-  background: rgba(0,0,0,0.7);
-  border-top: 1px solid rgba(255, 215, 0, 0.2);
-  backdrop-filter: blur(12px);
-}
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 40px;
+      background: #eef2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
 
-.input-area input {
-  flex: 1;
-  padding: 14px;
+    .user-message .avatar {
+      background: #1e2a36;
+      color: white;
+    }
 
-  border-radius: 10px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+    .ai-message .avatar {
+      background: linear-gradient(145deg, #fff, #f5f9ff);
+      color: #1f3b4c;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
 
-  background: rgba(0,0,0,0.6);
-  color: #ffd700;
+    .bubble {
+      background: white;
+      padding: 0.9rem 1.3rem;
+      border-radius: 1.8rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+      line-height: 1.5;
+      font-size: 0.95rem;
+      font-weight: 450;
+      color: #1f2e3f;
+      word-break: break-word;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
 
-  outline: none;
-}
+    .user-message .bubble {
+      background: #1e2a36;
+      color: white;
+      border-bottom-right-radius: 0.5rem;
+      box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.1);
+    }
 
-.input-area input::placeholder {
-  color: rgba(255, 215, 0, 0.5);
-}
+    .ai-message .bubble {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom-left-radius: 0.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
 
-.input-area button {
-  padding: 12px 16px;
+    /* typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.7rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      width: fit-content;
+      border-radius: 2rem;
+      margin-top: 0.3rem;
+    }
 
-  background: transparent;
-  border: 1px solid #ffd700;
-  color: #ffd700;
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #8ba0b5;
+      border-radius: 50%;
+      display: inline-block;
+      animation: wave 1.3s infinite ease-in-out;
+    }
 
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
 
-.input-area button:hover {
-  background: #ffd700;
-  color: black;
-}
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
-/* ANIMATION */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    @keyframes wave {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+      }
+      30% {
+        transform: translateY(-6px);
+        opacity: 1;
+      }
+    }
 
-/* SCROLLBAR */
-.chat-box::-webkit-scrollbar {
-  width: 6px;
-}
+    /* input area — modern */
+    .input-area {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 1rem 1.8rem 1.8rem 1.8rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
 
-.chat-box::-webkit-scrollbar-thumb {
-  background: rgba(255, 215, 0, 0.3);
-  border-radius: 10px;
-}
+    .input-wrapper {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      background: white;
+      border-radius: 3rem;
+      padding: 0.4rem 0.4rem 0.4rem 1.4rem;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      transition: all 0.2s;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #8aaec0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    textarea {
+      flex: 1;
+      border: none;
+      resize: none;
+      font-family: 'Inter', monospace;
+      font-size: 0.95rem;
+      padding: 0.8rem 0;
+      max-height: 130px;
+      background: transparent;
+      outline: none;
+      color: #1f2e3f;
+      font-weight: 450;
+    }
+
+    textarea::placeholder {
+      color: #9aafc4;
+      font-weight: 400;
+    }
+
+    .send-btn {
+      background: #1e2a36;
+      width: 44px;
+      height: 44px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .send-btn:hover {
+      background: #2c4050;
+      transform: scale(0.96);
+    }
+
+    .send-btn:active {
+      transform: scale(0.94);
+    }
+
+    .send-btn:disabled {
+      background: #bcccd9;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* footer hints */
+    .info-note {
+      text-align: center;
+      font-size: 0.7rem;
+      margin-top: 0.7rem;
+      color: #667e99;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: none;
+      color: #7f99b3;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .clear-btn:hover {
+      color: #2c3e4e;
+    }
+
+    /* responsive */
+    @media (max-width: 680px) {
+      .chat-app {
+        height: 95vh;
+        border-radius: 1.8rem;
+      }
+      .messages-container {
+        padding: 1.2rem;
+      }
+      .message {
+        max-width: 92%;
+      }
+      .brand h1 {
+        font-size: 1.2rem;
+      }
+      .input-area {
+        padding: 0.8rem 1rem 1.2rem;
+      }
+    }
+
+    /* error / small inline alert */
+    .error-badge {
+      background: #fff0f0;
+      color: #b13e3e;
+      font-size: 0.7rem;
+      border-radius: 30px;
+      padding: 3px 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="chat-app">
+  <div class="chat-header">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fas fa-brain"></i>
+      </div>
+      <div>
+        <h1>NimAI <span style="font-weight: 400; font-size: 0.9rem;">search</span></h1>
+        <p>powered by Tavily · real-time intelligence</p>
+      </div>
+    </div>
+    <div class="status-badge">
+      <i class="fas fa-circle" style="font-size: 0.5rem;"></i> 
+      <span>active · generative search</span>
+    </div>
+  </div>
+
+  <div class="messages-container" id="chatMessages">
+    <!-- welcome / initial message -->
+    <div class="message ai-message">
+      <div class="avatar"><i class="fas fa-robot"></i></div>
+      <div class="bubble">
+        ✨ Hey there! I'm NimAI, your intelligent research companion.<br>
+        Ask me anything — I’ll fetch concise, real-time insights from the web using Tavily search. Try: <span style="background:#EFF3F8; padding:2px 6px; border-radius:40px;">"Latest AI breakthroughs 2025"</span> or <span style="background:#EFF3F8; padding:2px 6px; border-radius:40px;">"Climate tech innovations"</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea id="userInput" rows="1" placeholder="Ask anything ... (ex: latest news about space exploration)" spellcheck="false"></textarea>
+      <button class="send-btn" id="sendBtn">
+        <i class="fas fa-arrow-up"></i>
+      </button>
+    </div>
+    <div class="info-note">
+      <span><i class="far fa-lightbulb"></i> AI fetches top 3 web results & summarizes</span>
+      <button class="clear-btn" id="clearChatBtn"><i class="far fa-trash-alt"></i> clear chat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- DOM elements
+  const messagesContainer = document.getElementById('chatMessages');
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const clearChatBtn = document.getElementById('clearChatBtn');
+
+  // --- State management
+  let isWaitingForResponse = false;
+
+  // Helper: auto-resize textarea
+  function autoResizeTextarea() {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 130) + 'px';
+  }
+  userInput.addEventListener('input', autoResizeTextarea);
+
+  // Scroll to bottom of messages
+  function scrollToBottom() {
+    messagesContainer.scrollTo({
+      top: messagesContainer.scrollHeight,
+      behavior: 'smooth'
+    });
+  }
+
+  // Add a new message bubble (type: 'user' or 'ai')
+  function addMessage(content, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type === 'user' ? 'user-message' : 'ai-message'}`;
+    
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'avatar';
+    if (type === 'user') {
+      avatarDiv.innerHTML = '<i class="fas fa-user"></i>';
+    } else {
+      avatarDiv.innerHTML = '<i class="fas fa-sparkles"></i>';
+    }
+    
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.className = 'bubble';
+    // preserve line breaks? convert text formatting
+    bubbleDiv.innerHTML = content.replace(/\n/g, '<br>');
+    
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(bubbleDiv);
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+    return messageDiv;
+  }
+
+  // Remove typing indicator if present
+  function removeTypingIndicator() {
+    const existingTyping = document.querySelector('.typing-indicator-wrapper');
+    if (existingTyping) existingTyping.remove();
+  }
+
+  // Show typing indicator (AI is thinking)
+  function showTypingIndicator() {
+    removeTypingIndicator();
+    const wrapper = document.createElement('div');
+    wrapper.className = 'message ai-message typing-indicator-wrapper';
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'avatar';
+    avatarDiv.innerHTML = '<i class="fas fa-sparkles"></i>';
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    wrapper.appendChild(avatarDiv);
+    wrapper.appendChild(typingDiv);
+    messagesContainer.appendChild(wrapper);
+    scrollToBottom();
+  }
+
+  // Error message helper (redish subtle)
+  function addErrorMessage(errorText) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ai-message`;
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'avatar';
+    avatarDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.className = 'bubble';
+    bubbleDiv.style.background = '#fff5f0';
+    bubbleDiv.style.borderLeft = '3px solid #e07c4c';
+    bubbleDiv.innerHTML = `⚠️ ${errorText}<br><span style="font-size:0.75rem; opacity:0.7;">Please check connection or try again.</span>`;
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(bubbleDiv);
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+  }
+
+  // actual API call (using your existing backend endpoint)
+  async function sendMessageToBackend(userText) {
+    // Assuming your Next.js API route is at "/api/chat" or same endpoint.
+    // According to your handler, it expects POST with { text }.
+    // We'll use relative path '/api/chat' (adjust if your endpoint is different, but it's typical)
+    // The original handler resides in /pages/api/chat.js or similar.
+    const API_URL = '/api/chat';
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+    
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: userText }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        let errorDetail = `Server responded with ${response.status}`;
+        try {
+          const errData = await response.json();
+          errorDetail = errData.reply || errData.message || errorDetail;
+        } catch(e) {}
+        throw new Error(errorDetail);
+      }
+      
+      const data = await response.json();
+      // data structure: { reply: "something" }
+      if (data && typeof data.reply === 'string') {
+        return data.reply;
+      } else {
+        return "Received unusual response from assistant.";
+      }
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error('Request timed out. The search took too long.');
+      }
+      throw new Error(err.message || 'Network or API error');
+    }
+  }
+
+  // Process user input + AI response
+  async function handleSend() {
+    if (isWaitingForResponse) return;
+    const rawText = userInput.value.trim();
+    if (!rawText) {
+      // subtle feedback: shake input? just ignore but add no empty msgs
+      userInput.style.border = '1px solid #ffb7b7';
+      setTimeout(() => { userInput.style.border = ''; }, 400);
+      return;
+    }
+    
+    // clear input field and reset height
+    userInput.value = '';
+    autoResizeTextarea();
+    
+    // Add user message to UI
+    addMessage(rawText, 'user');
+    
+    // set busy state
+    isWaitingForResponse = true;
+    sendBtn.disabled = true;
+    userInput.disabled = true;
+    
+    // Show AI is typing
+    showTypingIndicator();
+    
+    let aiReplyText = '';
+    let hasError = false;
+    
+    try {
+      const reply = await sendMessageToBackend(rawText);
+      // Beautify the reply: if reply starts with "OK: " (coming from original backend)
+      // but our backend returns either "No input", "No results OR API failed", "OK: ..." or "Backend crash"
+      // We'll make it pretty, but respect whatever data
+      let finalReply = reply;
+      // Original logic may produce "OK: " prefix + snippet. we can format to be user friendly.
+      if (reply.startsWith("OK:")) {
+        // transform to more readable style
+        let trimmedContent = reply.substring(3).trim();
+        if (trimmedContent.length > 0) {
+          finalReply = `🔍 **Web insights** (top results summary):<br><br>${escapeHtml(trimmedContent)}<br><br><span style="font-size:0.75rem; opacity:0.7;">✨ source: Tavily real-time search</span>`;
+        } else {
+          finalReply = `📡 Received empty search results. Try rephrasing your query.`;
+        }
+      } else if (reply.includes("No results OR API failed")) {
+        finalReply = `🌐 Tavily search returned no relevant results. Please try a different question or broader keywords.`;
+      } else if (reply.includes("No input")) {
+        finalReply = `🤔 I didn't receive any text. Please ask something meaningful.`;
+      } else if (reply.includes("Backend crash")) {
+        finalReply = `⚠️ Backend service encountered an issue. Check API configuration or Tavily key.`;
+      } else {
+        finalReply = reply;
+      }
+      aiReplyText = finalReply;
+    } catch (err) {
+      console.error("Chat error:", err);
+      hasError = true;
+      aiReplyText = `❌ Request failed: ${err.message || "Unexpected error. Check if API route is accessible."}`;
+    } finally {
+      // remove typing indicator
+      removeTypingIndicator();
+      
+      if (hasError) {
+        addErrorMessage(aiReplyText);
+      } else {
+        // add AI message with formatted reply
+        addMessage(aiReplyText, 'ai');
+      }
+      
+      // reset states
+      isWaitingForResponse = false;
+      sendBtn.disabled = false;
+      userInput.disabled = false;
+      userInput.focus();
+    }
+  }
+  
+  // simple escape to avoid XSS from user text, but we trust reply text mostly
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+  
+  // Clear chat history except initial welcome (keep first message)
+  function clearChatHistory() {
+    // keep only the first welcome message
+    const messages = messagesContainer.querySelectorAll('.message');
+    for (let i = 0; i < messages.length; i++) {
+      // if it's not the first ai-message (welcome)
+      const isFirstMsg = (i === 0 && messages[i].classList.contains('ai-message'));
+      if (!isFirstMsg) {
+        messages[i].remove();
+      }
+    }
+    // optionally add a small system note
+    const systemNote = document.createElement('div');
+    systemNote.className = 'message ai-message';
+    systemNote.style.opacity = '0.7';
+    systemNote.innerHTML = `<div class="avatar"><i class="fas fa-info-circle"></i></div><div class="bubble" style="background:#f1f5f9;">🧹 Chat history cleared. Ask me anything!</div>`;
+    messagesContainer.appendChild(systemNote);
+    scrollToBottom();
+    setTimeout(() => {
+      if (systemNote && systemNote.remove) systemNote.remove();
+    }, 2500);
+  }
+  
+  // Event listeners
+  sendBtn.addEventListener('click', handleSend);
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!isWaitingForResponse) handleSend();
+    }
+  });
+  
+  clearChatBtn.addEventListener('click', () => {
+    if (isWaitingForResponse) return;
+    clearChatHistory();
+  });
+  
+  // initial focus
+  userInput.focus();
+  
+  // optional: test connection status on load (silent, just friendly)
+  window.addEventListener('load', () => {
+    console.log('✨ NimAI interface ready — connected to /api/chat handler');
+  });
+</script>
+</body>
+</html>
