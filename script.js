@@ -53,7 +53,7 @@ async function fetchAIResponse(userText) {
     if (reply.startsWith("OK:")) {
       let trimmed = reply.substring(3).trim();
       if (trimmed.length > 0) {
-        reply = `<i class="fas fa-globe"></i> <strong>🔍 Web Insights (Tavily):</strong><br><br>${trimmed}<br><br><span style="font-size:0.7rem; opacity:0.7;">✨ real-time search</span>`;
+        reply = `<i class="fas fa-globe"></i> <strong>Web Insights:</strong><br><br>${trimmed}`;
       } else {
         reply = "🌐 No results found. Try rephrasing.";
       }
@@ -67,7 +67,7 @@ async function fetchAIResponse(userText) {
     return reply;
   } catch (err) {
     console.error("API Error:", err);
-    return `❌ Error: ${err.message}. Make sure backend is running at /api/chat`;
+    return `❌ Error: ${err.message}`;
   }
 }
 
@@ -103,7 +103,7 @@ function clearChat() {
       msgs[i].remove();
     }
   }
-  addMessage("✨ Chat cleared. Video background continues.", false);
+  addMessage("✨ Chat cleared.", false);
 }
 
 // Enter key support
@@ -116,10 +116,7 @@ input.addEventListener('keypress', (e) => {
 
 // ========== VOICE RECOGNITION ==========
 let recognition = null;
-const micBtn = document.getElementById('micBtn');
-const listeningLabel = document.getElementById('listeningLabel');
-const voiceFeedback = document.getElementById('voiceFeedback');
-const voiceCard = document.getElementById('voiceCard');
+let isListening = false;
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -130,61 +127,55 @@ if (SpeechRecognition) {
   recognition.lang = 'en-US';
   
   recognition.onstart = () => {
-    voiceCard.classList.add('listening-active');
-    listeningLabel.innerHTML = '<i class="fas fa-microphone"></i> Listening... speak now';
-    voiceFeedback.innerHTML = '🎙️ Voice active — speak your question';
-    if (micBtn) micBtn.style.borderColor = '#ffd700';
+    isListening = true;
+    const micBtn = document.querySelector('.voice-btn');
+    if (micBtn) {
+      micBtn.classList.add('mic-listening');
+      micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+    }
   };
   
   recognition.onend = () => {
-    voiceCard.classList.remove('listening-active');
-    listeningLabel.innerHTML = '<i class="fas fa-circle"></i> Go ahead, I\'m listening...';
-    if (micBtn) micBtn.style.borderColor = 'rgba(255, 215, 0, 0.4)';
-    if (voiceFeedback.innerHTML.includes('active')) {
-      setTimeout(() => {
-        voiceFeedback.innerHTML = '🎤 Tap the mic & speak naturally';
-      }, 1500);
+    isListening = false;
+    const micBtn = document.querySelector('.voice-btn');
+    if (micBtn) {
+      micBtn.classList.remove('mic-listening');
+      micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
     }
   };
   
   recognition.onerror = (event) => {
     console.warn('Speech error:', event.error);
-    voiceCard.classList.remove('listening-active');
-    listeningLabel.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Mic error';
-    voiceFeedback.innerHTML = '⚠️ Could not recognize. Check microphone permissions.';
-    setTimeout(() => {
-      listeningLabel.innerHTML = '<i class="fas fa-circle"></i> Go ahead, I\'m listening...';
-      voiceFeedback.innerHTML = '🎤 Tap the mic & speak naturally';
-    }, 2000);
+    isListening = false;
+    const micBtn = document.querySelector('.voice-btn');
+    if (micBtn) {
+      micBtn.classList.remove('mic-listening');
+      micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    }
   };
   
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
-    voiceFeedback.innerHTML = `✨ Recognized: "${transcript.substring(0, 50)}" — searching...`;
-    listeningLabel.innerHTML = '<i class="fas fa-check-circle"></i> Voice captured!';
-    
-    // Send the voice transcript to chat
     input.value = transcript;
     send();
-    
-    setTimeout(() => {
-      if (!voiceCard.classList.contains('listening-active')) {
-        listeningLabel.innerHTML = '<i class="fas fa-circle"></i> Go ahead, I\'m listening...';
-        voiceFeedback.innerHTML = '🎤 Tap the mic & speak naturally';
-      }
-    }, 3000);
   };
 }
 
 function startVoice() {
   if (!recognition) {
-    if (voiceFeedback) voiceFeedback.innerHTML = '❌ Voice not supported in this browser';
+    alert("Voice recognition not supported in this browser. Please use Chrome, Edge, or Safari.");
     return;
   }
+  
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+  
   try {
     recognition.start();
   } catch (err) {
-    console.log('Voice already started');
+    console.log('Voice already started or error:', err);
   }
 }
 
