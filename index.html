@@ -6,12 +6,16 @@
   <title>Nexora AI</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="app">
 
   <div class="header">
     <h1>Nexora AI</h1>
+
+    <!-- 🧹 CLEAR CHAT BUTTON -->
+    <button onclick="clearChat()">🗑 Clear</button>
   </div>
 
   <div id="chatBox" class="chat-box"></div>
@@ -22,7 +26,7 @@
       type="text"
       placeholder="Message Nexora..."
       onkeydown="if(event.key==='Enter') send()"
-    >
+    />
 
     <button onclick="startVoice()">🎤</button>
     <button onclick="send()">➤</button>
