@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Echo Mind · Voice Canvas</title>
-  <!-- Google Fonts + modern system stack -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <!-- Font Awesome 6 (free icons) -->
+  <title>Echo Mind · Voice & AI Chat</title>
+  <!-- Google Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* BASE STYLES - Dark theme with gold accents */
     * {
       margin: 0;
       padding: 0;
@@ -16,93 +16,260 @@
     }
 
     body {
-      background: radial-gradient(circle at 10% 30%, #eef2ff, #e0e8f5);
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      min-height: 100vh;
+      background: linear-gradient(135deg, #000000, #0f0f0f);
+      color: #ffd700;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* APP LAYOUT */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      background: linear-gradient(145deg, #ffd700, #b8860b);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
     }
 
-    /* main card container — glassmorphic panel that holds both voice card & abstract art */
-    .echo-container {
-      max-width: 520px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.5);
+    .logo-icon i {
+      font-size: 1.3rem;
+      color: #0a0a0a;
+    }
+
+    .header h1 {
+      color: #ffd700;
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+
+    .header p {
+      font-size: 0.7rem;
+      color: rgba(255, 215, 0, 0.6);
+      margin-top: 2px;
+    }
+
+    .header button {
+      background: transparent;
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .header button:hover {
+      background: #ffd700;
+      color: black;
+    }
+
+    /* MAIN CONTAINER - 2 columns (chat + right panel) */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* CHAT BOX SECTION */
+    .chat-section {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: radial-gradient(circle at top, rgba(255, 215, 0, 0.05), transparent);
+    }
+
+    /* MESSAGE BASE */
+    .msg {
+      max-width: 75%;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      line-height: 1.4;
+      font-size: 15px;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    /* USER MESSAGE */
+    .user {
+      margin-left: auto;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      color: #ffd700;
+    }
+
+    /* AI MESSAGE */
+    .ai {
+      margin-right: auto;
+      background: rgba(255, 215, 0, 0.08);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      color: #ffe680;
+    }
+
+    /* TYPING INDICATOR */
+    .typing-indicator {
+      display: flex;
+      gap: 6px;
+      padding: 8px 0;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #ffd700;
+      border-radius: 50%;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
+      30% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* INPUT AREA */
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      border-top: 1px solid rgba(255, 215, 0, 0.2);
       backdrop-filter: blur(12px);
-      border-radius: 2.5rem;
-      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.03);
-      padding: 1.8rem;
-      transition: all 0.2s ease;
-      border: 1px solid rgba(255, 255, 255, 0.7);
     }
 
-    /* Voice Assessment card (clean, modern, elevated) */
+    .input-area input {
+      flex: 1;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffd700;
+      outline: none;
+      font-family: 'Inter', monospace;
+    }
+
+    .input-area input::placeholder {
+      color: rgba(255, 215, 0, 0.5);
+    }
+
+    .input-area button {
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .input-area button:hover {
+      background: #ffd700;
+      color: black;
+    }
+
+    /* RIGHT PANEL - Voice Assessment + Abstract Art */
+    .right-panel {
+      width: 340px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      border-left: 1px solid rgba(255, 215, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    /* Voice Assessment Card */
     .voice-card {
-      background: rgba(255, 255, 255, 0.75);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
-      border-radius: 2rem;
-      padding: 1.6rem 1.8rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease;
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 1.4rem;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      transition: all 0.2s;
     }
 
     .voice-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 1.2rem;
     }
 
     .voice-header i {
-      font-size: 1.8rem;
-      background: linear-gradient(145deg, #1f2f3c, #2c4c6e);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      font-size: 1.6rem;
+      color: #ffd700;
     }
 
     .voice-header h3 {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      color: #1f2e3a;
-      letter-spacing: -0.3px;
+      color: #ffd700;
     }
 
-    /* microphone button + listening state */
     .mic-area {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 1.5rem 0 1rem;
+      margin: 1rem 0;
     }
 
     .mic-button {
-      background: linear-gradient(145deg, #1f2f3c, #15232e);
-      width: 80px;
-      height: 80px;
+      background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255,255,255,0.5);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      box-shadow: 0 8px 16px -6px rgba(0, 0, 0, 0.5);
     }
 
     .mic-button i {
-      font-size: 2.5rem;
-      color: white;
-      transition: transform 0.2s;
+      font-size: 2rem;
+      color: #ffd700;
     }
 
     .mic-button:hover {
-      transform: scale(1.02);
-      background: linear-gradient(145deg, #2c4050, #1e2e3c);
-      box-shadow: 0 16px 24px -10px rgba(0, 0, 0, 0.25);
+      transform: scale(1.03);
+      border-color: #ffd700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
     }
 
     .mic-button:active {
@@ -110,102 +277,76 @@
     }
 
     .listening-text {
-      margin-top: 1rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #3a5a78;
-      background: rgba(255, 255, 255, 0.6);
-      padding: 5px 16px;
-      border-radius: 60px;
-      backdrop-filter: blur(2px);
-      display: inline-flex;
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
+      color: rgba(255, 215, 0, 0.7);
+      display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .listening-text i {
-      font-size: 0.7rem;
+      font-size: 0.5rem;
       color: #10b981;
     }
 
-    /* subtle pulse animation when listening (js toggles class) */
-    .listening-active .mic-button {
-      animation: pulseGlow 1.4s infinite;
-      background: linear-gradient(145deg, #2f6b8f, #1f4a66);
+    .voice-status-note {
+      font-size: 0.7rem;
+      color: rgba(255, 215, 0, 0.5);
+      text-align: center;
+      margin-top: 8px;
     }
 
-    @keyframes pulseGlow {
-      0% {
-        box-shadow: 0 0 0 0 rgba(31, 75, 100, 0.4), 0 12px 20px -8px rgba(0,0,0,0.2);
-      }
-      70% {
-        box-shadow: 0 0 0 12px rgba(31, 110, 150, 0), 0 12px 20px -8px rgba(0,0,0,0.2);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(31, 110, 150, 0), 0 12px 20px -8px rgba(0,0,0,0.2);
-      }
-    }
-
-    /* Abstract art container — fluid organic shapes */
+    /* Abstract Art Canvas */
     .abstract-canvas {
-      background: rgba(245, 248, 255, 0.5);
-      border-radius: 2rem;
-      padding: 1.6rem 1.2rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 24px;
+      padding: 1.2rem;
+      border: 1px solid rgba(255, 215, 0, 0.15);
       backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      transition: all 0.3s;
-      position: relative;
       overflow: hidden;
     }
 
     .fluid-shapes {
       position: relative;
-      height: 140px;
+      height: 130px;
       margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    /* organic blobs using pseudo-elements and gradients */
     .shape-blob {
       position: absolute;
       border-radius: 62% 38% 72% 28% / 46% 54% 46% 54%;
-      background: radial-gradient(circle at 30% 40%, #b2d8ff, #7ab3c8);
-      opacity: 0.55;
-      filter: blur(2px);
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.25), rgba(184, 134, 11, 0.15));
+      filter: blur(3px);
       animation: floatOrganic 12s infinite alternate ease-in-out;
     }
 
     .shape-blob:nth-child(1) {
-      width: 110px;
-      height: 110px;
-      top: 10px;
+      width: 100px;
+      height: 100px;
+      top: 5px;
       left: -10px;
-      background: radial-gradient(circle, #9ac4e8, #6d9ebd);
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.3), rgba(184, 134, 11, 0.2));
       animation-duration: 14s;
-      opacity: 0.6;
     }
 
     .shape-blob:nth-child(2) {
-      width: 130px;
-      height: 130px;
-      bottom: -20px;
+      width: 120px;
+      height: 120px;
+      bottom: -15px;
       right: -20px;
-      background: radial-gradient(circle, #f5d0b3, #d9b48b);
-      opacity: 0.5;
+      background: radial-gradient(circle, rgba(255, 200, 100, 0.25), rgba(218, 165, 32, 0.15));
       border-radius: 74% 26% 68% 32% / 36% 54% 46% 64%;
       animation-duration: 16s;
       animation-delay: -2s;
     }
 
     .shape-blob:nth-child(3) {
-      width: 90px;
-      height: 90px;
-      left: 40%;
+      width: 80px;
+      height: 80px;
+      left: 35%;
       top: 30%;
-      background: radial-gradient(circle, #c3b1e6, #a389cc);
-      opacity: 0.4;
+      background: radial-gradient(circle, rgba(255, 220, 80, 0.2), rgba(200, 150, 30, 0.1));
       border-radius: 45% 55% 39% 61% / 56% 44% 56% 44%;
       animation-duration: 18s;
       animation-delay: -5s;
@@ -216,150 +357,266 @@
         transform: translate(0px, 0px) rotate(0deg);
       }
       100% {
-        transform: translate(15px, -15px) rotate(6deg);
+        transform: translate(12px, -12px) rotate(5deg);
       }
     }
 
-    /* smooth extra movement for second shape */
-    .shape-blob:nth-child(2) {
-      animation: floatOrganicReverse 15s infinite alternate;
-    }
-
-    @keyframes floatOrganicReverse {
-      0% {
-        transform: translate(0px, 0px) rotate(0deg);
-      }
-      100% {
-        transform: translate(-12px, 10px) rotate(-5deg);
-      }
-    }
-
-    /* quote text */
     .quote-text {
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       line-height: 1.5;
-      color: #2c4e6e;
-      font-weight: 500;
-      background: rgba(255, 255, 245, 0.6);
-      padding: 0.9rem 0.8rem;
-      border-radius: 2rem;
-      backdrop-filter: blur(2px);
-      margin-top: 6px;
-      letter-spacing: -0.2px;
+      color: rgba(255, 215, 0, 0.7);
+      padding: 0.6rem;
+      font-style: italic;
     }
 
     .quote-text i {
-      color: #9fb7d0;
-      margin-right: 6px;
+      margin-right: 4px;
+      color: #ffd700;
     }
 
-    /* small decorative line */
-    .harmony-tag {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 1rem;
-      font-size: 0.7rem;
-      color: #6c86a3;
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* status + interaction */
-    .voice-status-note {
-      font-size: 0.7rem;
-      margin-top: 8px;
-      color: #5f7d9c;
-      text-align: center;
+    /* Scrollbar */
+    .chat-box::-webkit-scrollbar,
+    .right-panel::-webkit-scrollbar {
+      width: 4px;
     }
 
-    button {
-      background: none;
-      border: none;
+    .chat-box::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    /* responsive adjustments */
-    @media (max-width: 560px) {
-      .echo-container {
-        padding: 1rem;
+    .chat-box::-webkit-scrollbar-thumb {
+      background: rgba(255, 215, 0, 0.3);
+      border-radius: 10px;
+    }
+
+    /* Listening active animation */
+    .listening-active .mic-button {
+      animation: pulseGlow 1.4s infinite;
+      border-color: #ffd700;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
       }
-      .voice-card {
-        padding: 1.2rem;
+      70% {
+        box-shadow: 0 0 0 12px rgba(255, 215, 0, 0);
       }
-      .mic-button {
-        width: 68px;
-        height: 68px;
-      }
-      .mic-button i {
-        font-size: 2rem;
-      }
-      .quote-text {
-        font-size: 0.8rem;
-      }
-      .fluid-shapes {
-        height: 110px;
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
       }
     }
 
-    /* blink animation for active listening */
-    @keyframes ripple {
-      0% { box-shadow: 0 0 0 0 rgba(47, 107, 143, 0.5); }
-      100% { box-shadow: 0 0 0 20px rgba(47, 107, 143, 0); }
+    /* Responsive */
+    @media (max-width: 780px) {
+      .right-panel {
+        display: none;
+      }
     }
-    .mic-recording {
-      animation: ripple 1.2s infinite;
+
+    @media (max-width: 480px) {
+      .msg {
+        max-width: 90%;
+      }
+      .header h1 {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="echo-container">
-  <!-- Voice Assessment Card -->
-  <div class="voice-card" id="voiceCard">
-    <div class="voice-header">
-      <i class="fas fa-microphone-alt"></i>
-      <h3>Voice Assessment</h3>
-    </div>
-    <div class="mic-area">
-      <div class="mic-button" id="micBtn">
-        <i class="fas fa-microphone"></i>
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-icon">
+        <i class="fas fa-brain"></i>
       </div>
-      <div class="listening-text" id="listeningLabel">
-        <i class="fas fa-circle" style="font-size: 0.45rem;"></i> Go ahead, I'm listening...
+      <div>
+        <h1>Echo Mind</h1>
+        <p>voice + intelligence</p>
       </div>
     </div>
-    <div class="voice-status-note" id="voiceFeedback">
-      🎤 Tap the mic & speak naturally
-    </div>
+    <button id="clearChatBtn"><i class="fas fa-trash-alt"></i> Clear</button>
   </div>
 
-  <!-- Abstract Art + Fluid organic shapes -->
-  <div class="abstract-canvas">
-    <div class="fluid-shapes">
-      <div class="shape-blob"></div>
-      <div class="shape-blob"></div>
-      <div class="shape-blob"></div>
-      <!-- additional organic fluid design element -->
-      <svg width="0" height="0" style="position: absolute;">
-        <defs>
-          <filter id="goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
-            <feBlend in="SourceGraphic" in2="goo" />
-          </filter>
-        </defs>
-      </svg>
+  <div class="main-container">
+    <!-- CHAT SECTION -->
+    <div class="chat-section">
+      <div class="chat-box" id="chatMessages">
+        <div class="msg ai">
+          ✨ <strong>Echo Mind active.</strong><br>
+          Ask me anything — I'll fetch real-time insights via Tavily search. You can also use voice assessment on the right panel.
+        </div>
+      </div>
+      <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask anything... e.g., latest AI news, what about Sri Lanka, Elon Musk..." autocomplete="off">
+        <button id="sendBtn"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
     </div>
-    <div class="quote-text">
-      <i class="fas fa-palette"></i> "Fluid organic shapes dance across the canvas, conveying a<br> sense of harmony in this abstract design."
-    </div>
-    <div class="harmony-tag">
-      <i class="fas fa-waveform"></i> <span>sonic resonance · visual poem</span> <i class="fas fa-feather-alt"></i>
+
+    <!-- RIGHT PANEL: Voice Assessment + Abstract Art -->
+    <div class="right-panel">
+      <div class="voice-card" id="voiceCard">
+        <div class="voice-header">
+          <i class="fas fa-microphone-alt"></i>
+          <h3>Voice Assessment</h3>
+        </div>
+        <div class="mic-area">
+          <div class="mic-button" id="micBtn">
+            <i class="fas fa-microphone"></i>
+          </div>
+          <div class="listening-text" id="listeningLabel">
+            <i class="fas fa-circle"></i> Go ahead, I'm listening...
+          </div>
+        </div>
+        <div class="voice-status-note" id="voiceFeedback">
+          🎤 Tap the mic & speak naturally
+        </div>
+      </div>
+
+      <!-- Abstract Art Canvas -->
+      <div class="abstract-canvas">
+        <div class="fluid-shapes">
+          <div class="shape-blob"></div>
+          <div class="shape-blob"></div>
+          <div class="shape-blob"></div>
+        </div>
+        <div class="quote-text">
+          <i class="fas fa-palette"></i> "Fluid organic shapes dance across the canvas, conveying a sense of harmony in this abstract design."
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // Voice recognition integration (optional but fully working)
-  // Provides interactive "listening" UI and matches the design exactly.
+  // ==================== CHAT + BACKEND INTEGRATION ====================
+  const messagesContainer = document.getElementById('chatMessages');
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const clearChatBtn = document.getElementById('clearChatBtn');
+  let isLoading = false;
+
+  function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  function addMessage(content, isUser) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `msg ${isUser ? 'user' : 'ai'}`;
+    messageDiv.innerHTML = content.replace(/\n/g, '<br>');
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+    return messageDiv;
+  }
+
+  function showTyping() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'msg ai';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span> Echo Mind is searching...</div>';
+    messagesContainer.appendChild(typingDiv);
+    scrollToBottom();
+  }
+
+  function removeTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+  }
+
+  // API call to your existing backend /api/chat (which uses Tavily)
+  async function fetchAIResponse(userText) {
+    const API_URL = '/api/chat';
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: userText })
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.reply || `HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      let reply = data.reply || "No meaningful reply from AI.";
+      
+      // Format reply nicely (your backend returns "OK: ..." or error msgs)
+      if (reply.startsWith("OK:")) {
+        let trimmed = reply.substring(3).trim();
+        if (trimmed.length > 0) {
+          reply = `<i class="fas fa-globe"></i> <strong>🔍 Web insights (Tavily):</strong><br><br>${trimmed}<br><br><span style="font-size:0.7rem; opacity:0.7;">✨ real-time search summary</span>`;
+        } else {
+          reply = "🌐 Search returned no meaningful content. Please rephrase.";
+        }
+      } else if (reply.includes("No results") || reply.includes("API failed")) {
+        reply = "📡 Tavily found no relevant results. Try a broader or different query.";
+      } else if (reply.includes("Backend crash")) {
+        reply = "⚠️ Backend configuration issue. Check Tavily API key or server logs.";
+      } else if (reply === "No input") {
+        reply = "🤖 Please enter a question to begin search.";
+      }
+      return reply;
+    } catch (err) {
+      console.error("API Error:", err);
+      return `❌ Connection error: ${err.message}. Make sure backend is running at /api/chat with valid TAVILY_API_KEY.`;
+    }
+  }
+
+  async function handleSendMessage(optionalText = null) {
+    if (isLoading) return;
+    let userQuery = optionalText !== null ? optionalText : userInput.value.trim();
+    if (!userQuery) return;
+    
+    if (optionalText === null) {
+      userInput.value = '';
+    }
+    
+    // Add user message
+    addMessage(userQuery, true);
+    isLoading = true;
+    showTyping();
+    
+    try {
+      const aiResponse = await fetchAIResponse(userQuery);
+      removeTyping();
+      addMessage(aiResponse, false);
+    } catch (err) {
+      removeTyping();
+      addMessage("⚠️ Unexpected error. Please try again.", false);
+    } finally {
+      isLoading = false;
+      if (optionalText === null) userInput.focus();
+    }
+  }
+
+  // Event listeners
+  sendBtn.addEventListener('click', () => handleSendMessage());
+  userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  });
+
+  clearChatBtn.addEventListener('click', () => {
+    // Keep only the first welcome message
+    const msgs = messagesContainer.querySelectorAll('.msg');
+    for (let i = 0; i < msgs.length; i++) {
+      if (i !== 0 || !msgs[i].classList.contains('ai')) {
+        msgs[i].remove();
+      }
+    }
+    addMessage("✨ Chat history cleared. Ask me anything!", false);
+  });
+
+  // ==================== VOICE RECOGNITION (Right Panel) ====================
   (function() {
     const micBtn = document.getElementById('micBtn');
     const listeningLabel = document.getElementById('listeningLabel');
@@ -369,7 +626,6 @@
     let recognition = null;
     let isListening = false;
     
-    // Check for browser support
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (SpeechRecognition) {
@@ -377,181 +633,81 @@
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'en-US';
-      recognition.maxAlternatives = 1;
       
-      // Event handlers
       recognition.onstart = () => {
         isListening = true;
         voiceCard.classList.add('listening-active');
-        micBtn.classList.add('mic-recording');
-        listeningLabel.innerHTML = '<i class="fas fa-microphone" style="color:#10b981;"></i> Listening ... speak now';
-        voiceFeedbackSpan.innerHTML = '🎙️ Voice active — I’m capturing your words';
-        // subtle haptic / style feedback
-        micBtn.style.background = "linear-gradient(145deg, #2f6b8f, #1f4a66)";
+        listeningLabel.innerHTML = '<i class="fas fa-microphone"></i> Listening... speak now';
+        voiceFeedbackSpan.innerHTML = '🎙️ Voice active — speak your question';
+        micBtn.style.borderColor = '#ffd700';
       };
       
       recognition.onend = () => {
         isListening = false;
         voiceCard.classList.remove('listening-active');
-        micBtn.classList.remove('mic-recording');
-        listeningLabel.innerHTML = '<i class="fas fa-circle" style="font-size: 0.45rem;"></i> Go ahead, I\'m listening...';
-        micBtn.style.background = "linear-gradient(145deg, #1f2f3c, #15232e)";
-        // if no result was captured, show idle feedback
-        if (voiceFeedbackSpan.innerHTML.includes('capturing') || voiceFeedbackSpan.innerHTML.includes('Processing')) {
-          voiceFeedbackSpan.innerHTML = '🎤 Tap the mic & speak naturally';
-        } else {
-          // keep custom message for few seconds then reset? but we'll reset after 3 secs
+        listeningLabel.innerHTML = '<i class="fas fa-circle"></i> Go ahead, I\'m listening...';
+        micBtn.style.borderColor = 'rgba(255, 215, 0, 0.4)';
+        if (!voiceFeedbackSpan.innerHTML.includes('Recognized')) {
           setTimeout(() => {
-            if (voiceFeedbackSpan.innerHTML !== '🎤 Tap the mic & speak naturally' && !isListening) {
+            if (voiceFeedbackSpan.innerHTML !== '🎤 Tap the mic & speak naturally')
               voiceFeedbackSpan.innerHTML = '🎤 Tap the mic & speak naturally';
-            }
-          }, 2000);
+          }, 1500);
         }
       };
       
       recognition.onerror = (event) => {
-        console.warn('Speech recognition error', event.error);
+        console.warn('Speech error', event.error);
         isListening = false;
         voiceCard.classList.remove('listening-active');
-        micBtn.classList.remove('mic-recording');
-        listeningLabel.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Mic error, try again';
-        micBtn.style.background = "linear-gradient(145deg, #1f2f3c, #15232e)";
-        voiceFeedbackSpan.innerHTML = '⚠️ Could not recognize. Check permissions or try typing.';
+        listeningLabel.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Mic error';
+        voiceFeedbackSpan.innerHTML = '⚠️ Could not recognize. Try typing or allow microphone.';
         setTimeout(() => {
-          if (!isListening) {
-            listeningLabel.innerHTML = '<i class="fas fa-circle" style="font-size: 0.45rem;"></i> Go ahead, I\'m listening...';
-            voiceFeedbackSpan.innerHTML = '🎤 Tap the mic & speak naturally';
-          }
-        }, 2200);
+          listeningLabel.innerHTML = '<i class="fas fa-circle"></i> Go ahead, I\'m listening...';
+          voiceFeedbackSpan.innerHTML = '🎤 Tap the mic & speak naturally';
+        }, 2000);
       };
       
       recognition.onresult = (event) => {
-        const last = event.results.length - 1;
-        const transcript = event.results[last][0].transcript;
-        const confidence = event.results[last][0].confidence;
-        // display what user said in the feedback area with a nice message
-        voiceFeedbackSpan.innerHTML = `✨ Recognized: "${transcript.substring(0, 70)}" — harmony captured.`;
+        const transcript = event.results[0][0].transcript;
+        voiceFeedbackSpan.innerHTML = `✨ Recognized: "${transcript.substring(0, 60)}" — searching...`;
         listeningLabel.innerHTML = '<i class="fas fa-check-circle"></i> Voice captured!';
-        // simulate an "assessment" echo
+        
+        // Send the voice transcript to chat
+        handleSendMessage(transcript);
+        
         setTimeout(() => {
           if (!isListening) {
-            listeningLabel.innerHTML = '<i class="fas fa-circle" style="font-size: 0.45rem;"></i> Go ahead, I\'m listening...';
-          }
-        }, 2000);
-        // reset feedback after 3.5 sec to default
-        setTimeout(() => {
-          if (voiceFeedbackSpan.innerHTML.includes('Recognized')) {
+            listeningLabel.innerHTML = '<i class="fas fa-circle"></i> Go ahead, I\'m listening...';
             voiceFeedbackSpan.innerHTML = '🎤 Tap the mic & speak naturally';
           }
-        }, 3500);
-        // optional: you can console log the transcript for integration later
-        console.log(`Voice assessment: ${transcript} (confidence: ${confidence})`);
-        // additional: you could dispatch a custom event for deeper AI usage (but UI remains clean)
-        const voiceEvent = new CustomEvent('voiceCommand', { detail: { text: transcript } });
-        window.dispatchEvent(voiceEvent);
+        }, 3000);
       };
-      
     } else {
-      // fallback if browser doesn't support speech recognition
       micBtn.style.opacity = '0.5';
       micBtn.style.cursor = 'not-allowed';
       listeningLabel.innerHTML = '<i class="fas fa-microphone-slash"></i> Voice not supported';
       voiceFeedbackSpan.innerHTML = '❌ Your browser does not support Web Speech API.';
-      micBtn.removeEventListener('click', startListening);
     }
     
     function startListening() {
-      if (!recognition) {
-        voiceFeedbackSpan.innerHTML = '🔇 Voice recognition unavailable in this browser.';
-        return;
-      }
+      if (!recognition) return;
       if (isListening) {
-        // if already listening, we stop and restart? Instead, we stop current session and start new
-        try {
-          recognition.stop();
-        } catch(e) {}
-        // small delay to restart
+        try { recognition.stop(); } catch(e) {}
         setTimeout(() => {
-          try {
-            recognition.start();
-          } catch(err) {
-            voiceFeedbackSpan.innerHTML = '⚠️ Please tap again.';
-          }
+          try { recognition.start(); } catch(err) {}
         }, 150);
         return;
       }
       try {
         recognition.start();
       } catch (err) {
-        voiceFeedbackSpan.innerHTML = '⚠️ Error starting voice. Try again.';
-        console.error(err);
+        voiceFeedbackSpan.innerHTML = '⚠️ Please tap again.';
       }
     }
     
-    if (micBtn) {
+    if (micBtn && recognition) {
       micBtn.addEventListener('click', startListening);
     }
-    
-    // add extra abstract motion effect: interactive tilt on card? smooth modern feel.
-    const abstractCanvas = document.querySelector('.abstract-canvas');
-    if (abstractCanvas) {
-      abstractCanvas.addEventListener('mousemove', (e) => {
-        const rect = abstractCanvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        const blobs = document.querySelectorAll('.shape-blob');
-        blobs.forEach((blob, idx) => {
-          const moveX = x * (8 + idx * 3);
-          const moveY = y * (6 + idx * 2);
-          blob.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${moveX * 0.5}deg)`;
-        });
-      });
-      abstractCanvas.addEventListener('mouseleave', () => {
-        const blobs = document.querySelectorAll('.shape-blob');
-        blobs.forEach((blob) => {
-          blob.style.transform = '';
-        });
-      });
-    }
-    
-    // simple animation for initial "fluid" greeting
-    const quoteDiv = document.querySelector('.quote-text');
-    if (quoteDiv) {
-      quoteDiv.style.opacity = '0';
-      quoteDiv.style.transform = 'translateY(8px)';
-      setTimeout(() => {
-        quoteDiv.style.transition = 'opacity 0.6s ease, transform 0.5s ease';
-        quoteDiv.style.opacity = '1';
-        quoteDiv.style.transform = 'translateY(0)';
-      }, 200);
-    }
-    
-    // add an extra ripple effect when voice is captured via custom event
-    window.addEventListener('voiceCommand', (e) => {
-      // create a gentle visual ripple on the abstract canvas
-      const rippleDiv = document.createElement('div');
-      rippleDiv.style.position = 'fixed';
-      rippleDiv.style.pointerEvents = 'none';
-      rippleDiv.style.width = '40px';
-      rippleDiv.style.height = '40px';
-      rippleDiv.style.borderRadius = '50%';
-      rippleDiv.style.background = 'radial-gradient(circle, #7ab3c8, transparent)';
-      rippleDiv.style.top = '50%';
-      rippleDiv.style.left = '50%';
-      rippleDiv.style.transform = 'translate(-50%, -50%)';
-      rippleDiv.style.opacity = '0.6';
-      rippleDiv.style.zIndex = '999';
-      document.body.appendChild(rippleDiv);
-      setTimeout(() => {
-        rippleDiv.style.transition = 'transform 0.6s ease, opacity 0.6s';
-        rippleDiv.style.transform = 'translate(-50%, -50%) scale(8)';
-        rippleDiv.style.opacity = '0';
-        setTimeout(() => {
-          if (rippleDiv.parentNode) rippleDiv.parentNode.removeChild(rippleDiv);
-        }, 700);
-      }, 20);
-    });
-    
   })();
 </script>
 </body>
