@@ -1,25 +1,49 @@
-export default function handler(req, res) {
-  const { text } = req.body || {};
+export default async function handler(req, res) {
+  try {
+    const { text } = req.body || {};
 
-  let reply = "I didn't understand that.";
+    if (!text) {
+      return res.status(400).json({
+        reply: "Please enter a question."
+      });
+    }
 
-  const msg = (text || "").toLowerCase();
+    const response = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        api_key: process.env.TAVILY_API_KEY,
+        query: text,
+        search_depth: "basic",
+        max_results: 5
+      })
+    });
 
-  if (msg.includes("hello") || msg.includes("hi")) {
-    reply = "👋 Hello! I am Nexora AI Assistant.";
-  }
-  else if (msg.includes("name")) {
-    reply = "🤖 I am Nexora AI (Free Mode).";
-  }
-  else if (msg.includes("time")) {
-    reply = "⏰ " + new Date().toLocaleTimeString();
-  }
-  else if (msg.includes("date")) {
-    reply = "📅 " + new Date().toLocaleDateString();
-  }
-  else if (msg.includes("help")) {
-    reply = "Try: hello, time, date, name";
-  }
+    const data = await response.json();
 
-  res.status(200).json({ reply });
+    if (!data.results || data.results.length === 0) {
+      return res.status(200).json({
+        reply: "No search results found."
+      });
+    }
+
+    const answer = data.results
+      .map((item, index) =>
+        `${index + 1}. ${item.title}\n${item.content}`
+      )
+      .join("\n\n");
+
+    res.status(200).json({
+      reply: answer
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      reply: "Search error."
+    });
+  }
 }
