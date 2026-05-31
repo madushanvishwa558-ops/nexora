@@ -1,19 +1,27 @@
+let chatBox;
+
+window.onload = function () {
+  chatBox = document.getElementById("chatBox");
+
+  loadChat();
+};
+
 async function send() {
   const inputEl = document.getElementById("input");
   const input = inputEl.value.trim();
   if (!input) return;
 
-  const chatBox = document.getElementById("chatBox");
-
-  // USER MESSAGE
-  chatBox.innerHTML += `<div class="msg user">${input}</div>`;
   inputEl.value = "";
 
-  // ⏳ LOADING MESSAGE
-  const loadingId = "loading_" + Date.now();
-  chatBox.innerHTML += `<div class="msg ai" id="${loadingId}">🤖 thinking...</div>`;
+  // USER message
+  addMessage("user", input);
 
-  chatBox.scrollTop = chatBox.scrollHeight;
+  // save
+  saveChat("user", input);
+
+  // loading
+  const loadingId = "loading_" + Date.now();
+  addTempMessage(loadingId, "🤖 thinking...");
 
   try {
     const res = await fetch("/api/chat", {
@@ -28,7 +36,8 @@ async function send() {
     document.getElementById(loadingId).remove();
 
     // AI message
-    chatBox.innerHTML += `<div class="msg ai">🤖 ${data.reply}</div>`;
+    addMessage("ai", data.reply);
+    saveChat("ai", data.reply);
 
     // voice
     const speech = new SpeechSynthesisUtterance(data.reply);
@@ -42,4 +51,66 @@ async function send() {
   }
 
   chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// 👉 Add message to UI
+function addMessage(type, text) {
+  chatBox.innerHTML += `
+    <div class="msg ${type}">
+      ${type === "ai" ? "🤖 " : ""}${text}
+    </div>
+  `;
+}
+
+// 👉 Temporary message (loading)
+function addTempMessage(id, text) {
+  chatBox.innerHTML += `
+    <div class="msg ai" id="${id}">
+      ${text}
+    </div>
+  `;
+}
+
+// 👉 Save chat to localStorage
+function saveChat(type, text) {
+  let chats = JSON.parse(localStorage.getItem("nexora_chat")) || [];
+  chats.push({ type, text });
+  localStorage.setItem("nexora_chat", JSON.stringify(chats));
+}
+
+// 👉 Load chat from localStorage
+function loadChat() {
+  let chats = JSON.parse(localStorage.getItem("nexora_chat")) || [];
+
+  chats.forEach(c => {
+    addMessage(c.type, c.text);
+  });
+}
+
+// 🎤 Voice input
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice not supported (use Chrome)");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+
+  recognition.start();
+
+  recognition.onresult = function (event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+    send();
+  };
+}
+
+// 🧹 Optional: clear chat
+function clearChat() {
+  localStorage.removeItem("nexora_chat");
+  chatBox.innerHTML = "";
 }
